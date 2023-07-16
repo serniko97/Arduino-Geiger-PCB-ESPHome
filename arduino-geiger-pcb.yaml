@@ -1,0 +1,40 @@
+esphome:
+  name: arduino-geiger-pcb
+  friendly_name: "Geiger Counter"
+  includes:
+    - arduino-geiger-pcb.h
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: "yourEncryptionKey"
+
+ota:
+  password: "yourPassword"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+uart:
+  id: uart_bus
+  rx_pin: GPIO16
+  baud_rate: 9600
+
+sensor:
+- platform: custom
+  lambda: |-
+    auto geigerCounter = new ArduinoGeigerPCB(id(uart_bus));
+    App.register_component(geigerCounter);
+    return {geigerCounter};
+  sensors:
+    name: "Arduino Geiger PCB"
+    unit_of_measurement: CPM
+    state_class: "measurement"
+    icon: "mdi:radioactive"
