@@ -1,8 +1,12 @@
 esphome:
   name: arduino-geiger-pcb
   friendly_name: "Geiger Counter"
-  includes:
-    - arduino-geiger-pcb.h
+
+# Pull this component from GitHub. If you copied the components/ folder next to
+# your config instead, use a local source (e.g. `source: .`).
+external_components:
+  - source: github://serniko97/Arduino-Geiger-PCB-ESPHome
+    components: [arduino_geiger_pcb]
 
 esp32:
   board: esp32dev
@@ -27,14 +31,14 @@ uart:
   rx_pin: GPIO16
   baud_rate: 9600
 
+arduino_geiger_pcb:
+  id: geiger_bus
+  uart_id: uart_bus
+
 sensor:
-- platform: custom
-  lambda: |-
-    auto geigerCounter = new ArduinoGeigerPCB(id(uart_bus));
-    App.register_component(geigerCounter);
-    return {geigerCounter};
-  sensors:
-    name: "Arduino Geiger PCB"
-    unit_of_measurement: CPM
-    state_class: "measurement"
-    icon: "mdi:radioactive"
+  - platform: arduino_geiger_pcb
+    cpm:
+      name: "Arduino Geiger PCB"
+      unit_of_measurement: CPM
+      state_class: measurement
+      icon: mdi:radioactive
